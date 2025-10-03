@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "env": {
-    "NEXT_PUBLIC_APP_URL": "@next_public_app_url"
-  },
   "functions": {
     "app/api/**/*.ts": {
       "maxDuration": 30
