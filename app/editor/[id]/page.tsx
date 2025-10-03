@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -34,22 +34,39 @@ export default function EditorPage() {
   const router = useRouter();
   const params = useParams();
   const gameId = params.id as string;
-  const { currentGame, setCurrentGame, updateGame, saveGame, loadGames, checkLoveCodeAvailability } = useSupabaseGameStore();
+  const { currentGame, setCurrentGame, updateGame, saveGame, loadGames, loadGameById, checkLoveCodeAvailability } = useSupabaseGameStore();
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [loveCodeStatus, setLoveCodeStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
   const [isNavigating, setIsNavigating] = useState(false);
   const [loveCodeCopied, setLoveCodeCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
     const loadGame = async () => {
       try {
         console.log("Loading game with ID:", gameId);
-        await loadGames();
-        const games = useSupabaseGameStore.getState().games;
-        console.log("Loaded games:", games.length);
         
-        const game = games.find((g) => g.id === gameId);
+        // First check if we already have the current game loaded
+        const store = useSupabaseGameStore.getState();
+        if (store.currentGame?.id === gameId) {
+          console.log("Game already loaded, skipping fetch");
+          setIsLoading(false);
+          return;
+        }
+        
+        // Check if game exists in our games array
+        const existingGame = store.games.find((g) => g.id === gameId);
+        if (existingGame) {
+          console.log("Found game in cache, setting as current");
+          setCurrentGame(existingGame);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Only load the specific game if we don't have it in cache
+        console.log("Game not in cache, loading specific game from database");
+        const game = await loadGameById(gameId);
         console.log("Found game:", game ? game.title : "Not found");
         
         if (game) {
@@ -76,6 +93,8 @@ export default function EditorPage() {
         setTimeout(() => {
           router.push("/");
         }, 2000);
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -85,7 +104,7 @@ export default function EditorPage() {
       console.error("No game ID provided");
       router.push("/");
     }
-  }, [gameId, loadGames, setCurrentGame, router, toast]);
+  }, [gameId, loadGameById, setCurrentGame, router, toast]);
 
   const handleSave = async () => {
     await saveGame();
@@ -130,16 +149,16 @@ export default function EditorPage() {
     }
   };
 
-  const handleBack = () => {
-    console.log("Back button clicked, isNavigating:", isNavigating);
+  const handleBack = useCallback(async () => {
+    console.log("handleBack called, isNavigating:", isNavigating);
     
     if (isNavigating) {
-      console.log("Already navigating, ignoring click");
+      console.log("Already navigating, returning early");
       return; // Prevent multiple clicks
     }
     
+    console.log("Setting isNavigating to true");
     setIsNavigating(true);
-    console.log("Starting navigation process");
     
     try {
       // Check if there are unsaved changes
@@ -151,22 +170,13 @@ export default function EditorPage() {
         console.log("User chose to save:", shouldSave);
         
         if (shouldSave) {
-          saveGame().then(() => {
-            console.log("Save successful, navigating to home");
-            router.push("/");
-          }).catch((error) => {
-            console.error("Save error:", error);
-            toast({
-              title: "Save failed",
-              description: "Could not save changes, but navigating anyway",
-              variant: "destructive",
-            });
-            router.push("/");
-          });
-          return;
+          console.log("Saving game...");
+          await saveGame();
+          console.log("Game saved successfully");
         }
       }
       
+      // Navigate back to home
       console.log("Navigating to home page");
       router.push("/");
     } catch (error) {
@@ -175,13 +185,13 @@ export default function EditorPage() {
       console.log("Using fallback navigation");
       window.location.href = "/";
     } finally {
-      // Reset navigation state after a delay
+      // Reset navigation state
+      console.log("Resetting navigation state");
       setTimeout(() => {
-        console.log("Resetting navigation state");
         setIsNavigating(false);
-      }, 1000);
+      }, 500);
     }
-  };
+  }, [isNavigating, router, saveGame]);
 
   // Validate love code availability
   useEffect(() => {
@@ -235,7 +245,7 @@ export default function EditorPage() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [saveGame]);
 
-  if (!currentGame) {
+  if (isLoading || !currentGame) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50">
         <div className="text-center">
@@ -277,29 +287,34 @@ export default function EditorPage() {
         <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1 sm:gap-4">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={handleBack}
-                      disabled={isNavigating}
-                      className="h-7 w-7 sm:h-10 sm:w-10 touch-manipulation"
-                      style={{ WebkitTapHighlightColor: 'transparent' }}
-                    >
-                      {isNavigating ? (
-                        <div className="animate-spin h-3 w-3 sm:h-5 sm:w-5 border-2 border-gray-300 border-t-blue-500 rounded-full" />
-                      ) : (
-                        <ArrowLeft className="h-3 w-3 sm:h-5 sm:w-5" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Back to Home (Esc or Alt+←)</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log("Back button clicked");
+                  handleBack();
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!isNavigating) {
+                    console.log("Back button touched");
+                    handleBack();
+                  }
+                }}
+                disabled={isNavigating}
+                className="h-7 w-7 sm:h-10 sm:w-10 touch-manipulation"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
+                title="Back to Home (Esc or Alt+←)"
+              >
+                {isNavigating ? (
+                  <div className="animate-spin h-3 w-3 sm:h-5 sm:w-5 border-2 border-gray-300 border-t-blue-500 rounded-full" />
+                ) : (
+                  <ArrowLeft className="h-3 w-3 sm:h-5 sm:w-5" />
+                )}
+              </Button>
               <div className="flex items-center gap-1 sm:gap-2">
                 <Heart className="h-4 w-4 sm:h-6 sm:w-6 text-rose-400 fill-rose-400" />
                 <h1 className="text-sm sm:text-xl font-bold truncate">Journey Editor</h1>

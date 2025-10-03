@@ -13,6 +13,7 @@ interface SupabaseGameStore {
   updateGame: (updates: Partial<GameContent>) => Promise<void>;
   saveGame: () => Promise<void>;
   loadGames: () => Promise<void>;
+  loadGameById: (id: string) => Promise<GameContent | null>;
   deleteGame: (id: string) => Promise<void>;
   setEditorState: (state: Partial<EditorState>) => void;
   getGameBySlug: (slug: string) => Promise<GameContent | null>;
@@ -70,6 +71,22 @@ export const useSupabaseGameStore = create<SupabaseGameStore>()(
       loadGames: async () => {
         const games = await supabaseStorage.games.getAll();
         set({ games });
+      },
+
+      loadGameById: async (id: string) => {
+        const game = await supabaseStorage.games.get(id);
+        if (game) {
+          // Update the games array to include this game
+          const currentGames = get().games;
+          const existingIndex = currentGames.findIndex(g => g.id === id);
+          if (existingIndex >= 0) {
+            currentGames[existingIndex] = game;
+          } else {
+            currentGames.push(game);
+          }
+          set({ games: currentGames });
+        }
+        return game;
       },
 
       deleteGame: async (id) => {

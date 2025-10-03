@@ -99,8 +99,8 @@ export default function Home() {
     // Set current game immediately for faster navigation
     setCurrentGame(game);
     
-    // Use router.replace for faster navigation on mobile
-    router.replace(`/editor/${game.id}`);
+    // Use router.push with shallow routing for faster navigation
+    router.push(`/editor/${game.id}`, { scroll: false });
   };
 
   const handleDeleteGame = async (game: any) => {

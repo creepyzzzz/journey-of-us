@@ -92,8 +92,8 @@ export function GameCard({ game, onClick, onDelete }: GameCardProps) {
       transition={{ duration: 0.2 }}
     >
       <Card
-        className={`cursor-pointer overflow-hidden hover:shadow-lg transition-shadow touch-manipulation ${
-          isNavigating ? 'opacity-70 pointer-events-none' : ''
+        className={`cursor-pointer overflow-hidden hover:shadow-lg transition-all duration-200 touch-manipulation ${
+          isNavigating ? 'opacity-70 pointer-events-none scale-95' : 'hover:scale-105'
         }`}
         onClick={handleCardClick}
         onTouchEnd={(e) => {
@@ -118,6 +118,11 @@ export function GameCard({ game, onClick, onDelete }: GameCardProps) {
                 </CardDescription>
               )}
             </div>
+            {isNavigating && (
+              <div className="flex items-center justify-center ml-2">
+                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <Heart className="h-5 w-5 sm:h-6 sm:w-6 fill-white text-white flex-shrink-0" />
               {game.published && game.slug && (
