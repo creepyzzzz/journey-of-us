@@ -40,7 +40,7 @@ export default function PlayPage() {
           const newSession = {
             gameId: game.id,
             sessionId: nanoid(), // Generate session ID for database references
-            playerNames: [game.creatorName || "Player 1", game.partnerNameHint || "Player 2"],
+            playerNames: [game.creatorName || "Player 1", game.partnerNameHint || "Player 2"] as [string, string],
             mode: "full", // Default to full journey mode
             currentLevel: 0,
             progress: {},

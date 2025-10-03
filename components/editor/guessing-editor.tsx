@@ -373,9 +373,9 @@ export function GuessingEditor() {
                                 </span>
                               ))}
                             </div>
-                            {question.correctChoiceIndex >= 0 && (
+                            {question.correctChoiceIndex !== undefined && question.correctChoiceIndex >= 0 && (
                               <div className="mt-2 text-xs text-green-600 font-medium">
-                                ✓ Correct answer: {question.choices[question.correctChoiceIndex]}
+                                ✓ Correct answer: {question.choices?.[question.correctChoiceIndex]}
                               </div>
                             )}
                           </div>

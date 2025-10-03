@@ -74,7 +74,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
           {!currentGame?.published ? (
             <>
               <p className="text-sm text-muted-foreground">
-                Publishing will generate a unique link{currentGame.loveCode ? ' and use your custom love code' : ' and love code'} that you can share.
+                Publishing will generate a unique link{currentGame?.loveCode ? ' and use your custom love code' : ' and love code'} that you can share.
               </p>
               <Button onClick={handlePublish} className="w-full">
                 Publish Journey
@@ -91,7 +91,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
                   </Button>
                 </div>
               </div>
-              {currentGame.loveCode && (
+              {currentGame?.loveCode && (
                 <div className="space-y-2">
                   <Label>Love Code</Label>
                   <Input value={currentGame.loveCode} readOnly className="text-center text-2xl font-bold" />
