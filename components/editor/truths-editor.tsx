@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { nanoid } from "nanoid";
-import { Plus, Trash2, GripVertical } from "lucide-react";
+import { Plus, Trash2, GripVertical, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,9 +23,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import {
-  useSortable,
-} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 interface SortableTruthItemProps {
@@ -34,7 +32,11 @@ interface SortableTruthItemProps {
   onDelete: (id: string) => void;
 }
 
-function SortableTruthItem({ truth, onUpdate, onDelete }: SortableTruthItemProps) {
+function SortableTruthItem({
+  truth,
+  onUpdate,
+  onDelete,
+}: SortableTruthItemProps) {
   const {
     attributes,
     listeners,
@@ -59,7 +61,9 @@ function SortableTruthItem({ truth, onUpdate, onDelete }: SortableTruthItemProps
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className={`${isDragging ? "shadow-lg scale-105" : ""} border-2 border-pink-100 hover:border-pink-200 transition-all duration-200 shadow-sm hover:shadow-md`}>
+      <Card
+        className={`${isDragging ? "shadow-lg scale-105" : ""} border-2 border-pink-100 hover:border-pink-200 transition-all duration-200 shadow-sm hover:shadow-md`}
+      >
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             <div
@@ -71,7 +75,7 @@ function SortableTruthItem({ truth, onUpdate, onDelete }: SortableTruthItemProps
             </div>
             <Textarea
               value={truth.text}
-              onChange={(e) => onUpdate(truth.id, e.target.value)}
+              onChange={e => onUpdate(truth.id, e.target.value)}
               rows={2}
               className="flex-1 border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl resize-none text-base font-semibold shadow-sm hover:shadow-md transition-all duration-200"
               placeholder="💭 Enter your truth question..."
@@ -116,7 +120,7 @@ export function TruthsEditor() {
   const handleDelete = (id: string) => {
     if (currentGame) {
       updateGame({
-        truths: truths.filter((t) => t.id !== id),
+        truths: truths.filter(t => t.id !== id),
       });
     }
   };
@@ -124,7 +128,7 @@ export function TruthsEditor() {
   const handleUpdate = (id: string, text: string) => {
     if (currentGame) {
       updateGame({
-        truths: truths.map((t) => (t.id === id ? { ...t, text } : t)),
+        truths: truths.map(t => (t.id === id ? { ...t, text } : t)),
       });
     }
   };
@@ -133,8 +137,8 @@ export function TruthsEditor() {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = truths.findIndex((item) => item.id === active.id);
-      const newIndex = truths.findIndex((item) => item.id === over?.id);
+      const oldIndex = truths.findIndex(item => item.id === active.id);
+      const newIndex = truths.findIndex(item => item.id === over?.id);
 
       updateGame({
         truths: arrayMove(truths, oldIndex, newIndex),
@@ -142,12 +146,10 @@ export function TruthsEditor() {
     }
   };
 
-
   return (
     <div className="space-y-6">
-
       {/* Add New Truth */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -156,19 +158,19 @@ export function TruthsEditor() {
         <div className="flex items-start gap-3">
           <Textarea
             value={newTruth}
-            onChange={(e) => setNewTruth(e.target.value)}
+            onChange={e => setNewTruth(e.target.value)}
             placeholder="💭 Add a truth question..."
             rows={2}
             className="flex-1 border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl resize-none text-base font-semibold placeholder:text-pink-400 shadow-sm hover:shadow-md transition-all duration-200"
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === "Enter" && e.ctrlKey) {
                 handleAdd();
               }
             }}
           />
-          <Button 
-            onClick={handleAdd} 
-            size="icon" 
+          <Button
+            onClick={handleAdd}
+            size="icon"
             className="shrink-0 h-12 w-12 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-xl cute-shadow"
           >
             <Plus className="h-5 w-5" />
@@ -188,7 +190,7 @@ export function TruthsEditor() {
         >
           <div className="space-y-2">
             <AnimatePresence>
-              {truths.map((truth) => (
+              {truths.map(truth => (
                 <SortableTruthItem
                   key={truth.id}
                   truth={truth}
@@ -202,7 +204,7 @@ export function TruthsEditor() {
       </DndContext>
 
       {truths.length === 0 && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center py-16"
