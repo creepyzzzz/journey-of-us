@@ -27,7 +27,6 @@ interface MultiplayerStore {
   ) => Promise<MultiplayerGameRoom>;
   leaveRoom: () => Promise<void>;
   startGame: () => Promise<void>;
-  updatePlayerReady: (playerId: string, isReady: boolean) => Promise<void>;
   spinWheel: (levelId: number, questionId?: string) => Promise<WheelSpin>;
   completeTurn: (turnId: string) => Promise<void>;
   subscribeToRoom: (roomId: string) => void;
@@ -71,7 +70,6 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
           name: hostName,
           joinedAt: new Date().toISOString(),
           isHost: true,
-          isReady: false,
         },
       ],
       status: "waiting",
@@ -136,7 +134,6 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       name: playerName,
       joinedAt: new Date().toISOString(),
       isHost: false,
-      isReady: false,
     };
 
     const updatedPlayers = [...roomData.joined_players, newPlayer];
@@ -175,6 +172,15 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
 
     // Subscribe to room updates
     get().subscribeToRoom(room.id);
+
+    // Auto-start game if both players have joined
+    if (room.joinedPlayers.length === 2) {
+      console.log("Both players joined, auto-starting game...");
+      // Small delay to ensure UI updates are processed
+      setTimeout(() => {
+        get().startGame();
+      }, 1000);
+    }
 
     return room;
   },
@@ -221,38 +227,6 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
     if (error) {
       throw new Error(`Failed to start game: ${error.message}`);
     }
-  },
-
-  updatePlayerReady: async (playerId: string, isReady: boolean) => {
-    const { currentRoom } = get();
-    if (!currentRoom) {
-      console.error("No current room found when updating player ready status");
-      return;
-    }
-
-    console.log("Updating player ready status:", {
-      playerId,
-      isReady,
-      currentRoom,
-    });
-
-    const updatedPlayers = currentRoom.joinedPlayers.map(p =>
-      p.id === playerId ? { ...p, isReady } : p
-    );
-
-    console.log("Updated players:", updatedPlayers);
-
-    const { error } = await supabase
-      .from("multiplayer_rooms")
-      .update({ joined_players: updatedPlayers })
-      .eq("id", currentRoom.id);
-
-    if (error) {
-      console.error("Failed to update player ready status:", error);
-      throw new Error(`Failed to update player ready status: ${error.message}`);
-    }
-
-    console.log("Successfully updated player ready status");
   },
 
   spinWheel: async (levelId: number, questionId?: string) => {

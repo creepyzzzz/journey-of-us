@@ -69,7 +69,14 @@ export interface LevelProgress {
 export type RomanceIntensity = "playful" | "deep" | "spicy" | "memory";
 
 export interface EditorState {
-  activeTab: "truths" | "dares" | "secrets" | "memories" | "romantic" | "guessing" | "answers";
+  activeTab:
+    | "truths"
+    | "dares"
+    | "secrets"
+    | "memories"
+    | "romantic"
+    | "guessing"
+    | "answers";
   previewMode: boolean;
   isDirty: boolean;
 }
@@ -148,7 +155,6 @@ export interface PlayerInfo {
   name: string;
   joinedAt: string;
   isHost: boolean;
-  isReady: boolean;
 }
 
 export interface GameAnalytics {
@@ -187,7 +193,13 @@ export interface PlayerAnswer {
   gameId: ID;
   sessionId: ID;
   questionId: string;
-  questionType: "truth" | "dare" | "secret" | "memory" | "romantic" | "guessing";
+  questionType:
+    | "truth"
+    | "dare"
+    | "secret"
+    | "memory"
+    | "romantic"
+    | "guessing";
   questionText: string;
   answer: string;
   playerName: string;
@@ -212,4 +224,3 @@ export interface GameSessionAnswers {
   completedAt?: string;
   totalScore?: number;
 }
-

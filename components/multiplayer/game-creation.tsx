@@ -109,8 +109,7 @@ interface WaitingRoomProps {
 
 export function WaitingRoom({ room, onGameStart }: WaitingRoomProps) {
   const [copied, setCopied] = useState(false);
-  const { isHost, updatePlayerReady, playerId, currentRoom } =
-    useMultiplayerStore();
+  const { isHost, playerId, currentRoom } = useMultiplayerStore();
 
   // Use currentRoom from store for real-time updates, fallback to prop
   const roomData = currentRoom || room;
@@ -144,18 +143,7 @@ export function WaitingRoom({ room, onGameStart }: WaitingRoomProps) {
     }
   };
 
-  const handleReadyToggle = async () => {
-    const currentPlayer = roomData.joinedPlayers.find(
-      (p: any) => p.id === playerId
-    );
-    if (currentPlayer) {
-      await updatePlayerReady(currentPlayer.id, !currentPlayer.isReady);
-    }
-  };
-
-  const allPlayersReady = roomData.joinedPlayers.every((p: any) => p.isReady);
-  const canStartGame =
-    isHost && roomData.joinedPlayers.length === 2 && allPlayersReady;
+  const canStartGame = roomData.joinedPlayers.length === 2;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
@@ -238,30 +226,16 @@ export function WaitingRoom({ room, onGameStart }: WaitingRoomProps) {
                           </span>
                         )}
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {player.isReady ? "Ready" : "Not ready"}
-                      </div>
+                      <div className="text-sm text-gray-500">Joined</div>
                     </div>
                   </div>
-                  {player.isReady && (
-                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
-                  )}
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Ready Button */}
-          <Button
-            onClick={handleReadyToggle}
-            className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg"
-          >
-            {roomData.joinedPlayers.find((p: any) => p.id === playerId)?.isReady
-              ? "Not Ready"
-              : "Ready"}
-          </Button>
 
           {/* Start Game Button */}
           {canStartGame && (
@@ -273,13 +247,9 @@ export function WaitingRoom({ room, onGameStart }: WaitingRoomProps) {
             </Button>
           )}
 
-          {!canStartGame && isHost && (
+          {!canStartGame && (
             <div className="text-center text-sm text-gray-500">
-              {roomData.joinedPlayers.length < 2 &&
-                "Waiting for another player to join..."}
-              {roomData.joinedPlayers.length === 2 &&
-                !allPlayersReady &&
-                "Waiting for all players to be ready..."}
+              Waiting for another player to join...
             </div>
           )}
         </CardContent>
