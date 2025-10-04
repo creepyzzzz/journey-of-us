@@ -23,6 +23,7 @@ const dbRowToGameContent = (row: any): GameContent => ({
   slug: row.slug || undefined,
   loveCode: row.love_code || undefined,
   passphraseProtected: row.passphrase_protected || false,
+  creatorFingerprint: row.creator_fingerprint || undefined,
 });
 
 // Helper function to convert GameContent to database row
@@ -47,6 +48,7 @@ const gameContentToDbRow = (game: GameContent) => ({
   slug: game.slug || null,
   love_code: game.loveCode || null,
   passphrase_protected: game.passphraseProtected || false,
+  creator_fingerprint: game.creatorFingerprint || null,
 });
 
 // Helper function to convert database row to GameState
@@ -114,6 +116,21 @@ export const supabaseStorage = {
       if (error) {
         console.error('Error fetching games:', error);
         throw new Error(`Failed to fetch games: ${error.message}`);
+      }
+
+      return data?.map(dbRowToGameContent) || [];
+    },
+
+    async getByCreatorFingerprint(creatorFingerprint: string): Promise<GameContent[]> {
+      const { data, error } = await supabase
+        .from('games')
+        .select('*')
+        .eq('creator_fingerprint', creatorFingerprint)
+        .order('updated_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching games by creator fingerprint:', error);
+        throw new Error(`Failed to fetch games by creator fingerprint: ${error.message}`);
       }
 
       return data?.map(dbRowToGameContent) || [];

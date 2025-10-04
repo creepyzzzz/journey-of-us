@@ -138,8 +138,9 @@ export function AnswersViewer({ gameId }: AnswersViewerProps) {
     URL.revokeObjectURL(url);
     
     toast({
-      title: "Exported!",
+      title: "Exported! 📥",
       description: "Player answers have been downloaded",
+      variant: "success",
     });
   };
 

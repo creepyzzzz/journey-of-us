@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { nanoid } from "nanoid";
-import { Plus, Trash2, GripVertical } from "lucide-react";
+import { Plus, Trash2, GripVertical, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
@@ -57,27 +57,28 @@ function SortableDareItem({ dare, onUpdate, onDelete }: SortableDareItemProps) {
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className={isDragging ? "shadow-lg" : ""}>
+      <Card className={`${isDragging ? "shadow-lg scale-105" : ""} border-2 border-pink-100 hover:border-pink-200 transition-all duration-200 shadow-sm hover:shadow-md`}>
         <CardContent className="p-4">
-          <div className="flex items-start gap-2">
+          <div className="flex items-start gap-3">
             <div
-              className="cursor-move mt-2 touch-none"
+              className="cursor-move mt-2 touch-none p-1 rounded-lg hover:bg-pink-50 transition-colors"
               {...attributes}
               {...listeners}
             >
-              <GripVertical className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
+              <GripVertical className="h-4 w-4 text-pink-400 hover:text-pink-600 transition-colors" />
             </div>
             <Textarea
               value={dare.text}
               onChange={(e) => onUpdate(dare.id, e.target.value)}
               rows={2}
-              className="flex-1"
+              className="flex-1 border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl resize-none text-base font-semibold shadow-sm hover:shadow-md transition-all duration-200"
+              placeholder="⭐ Enter your dare challenge..."
             />
             <Button
               variant="ghost"
               size="icon"
               onClick={() => onDelete(dare.id)}
-              className="shrink-0 text-destructive hover:text-destructive"
+              className="shrink-0 h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -141,25 +142,32 @@ export function DaresEditor() {
 
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Dare Challenges</h3>
-      </div>
-
+    <div className="space-y-6">
       {/* Add New Dare */}
-      <div className="flex items-start gap-2">
-        <Textarea
-          value={newDare}
-          onChange={(e) => setNewDare(e.target.value)}
-          placeholder="Give the biggest hug you can, right now"
-          rows={2}
-          onKeyDown={(e) => e.key === "Enter" && e.ctrlKey && handleAdd()}
-        />
-        <Button onClick={handleAdd} size="icon">
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-4 sm:p-6 border border-pink-100"
+      >
+        <div className="flex items-start gap-3">
+          <Textarea
+            value={newDare}
+            onChange={(e) => setNewDare(e.target.value)}
+            placeholder="⭐ Give the biggest hug you can, right now"
+            rows={2}
+            className="flex-1 border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl resize-none text-base font-semibold placeholder:text-pink-400 shadow-sm hover:shadow-md transition-all duration-200"
+            onKeyDown={(e) => e.key === "Enter" && e.ctrlKey && handleAdd()}
+          />
+          <Button 
+            onClick={handleAdd} 
+            size="icon" 
+            className="shrink-0 h-12 w-12 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-xl cute-shadow"
+          >
+            <Plus className="h-5 w-5" />
+          </Button>
+        </div>
+      </motion.div>
 
       {/* Drag & Drop Dares List */}
       <DndContext
@@ -187,14 +195,19 @@ export function DaresEditor() {
       </DndContext>
 
       {dares.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          <p>No dares yet. Add your first dare above!</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-16"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <Sparkles className="h-20 w-20 text-pink-200 mx-auto" />
+          </motion.div>
+        </motion.div>
       )}
-
-      <div className="text-sm text-muted-foreground text-center">
-        {dares.length} dare{dares.length !== 1 ? "s" : ""} • Ctrl+Enter to add • Drag to reorder
-      </div>
     </div>
   );
 }

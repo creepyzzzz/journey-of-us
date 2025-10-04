@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import { GameContent, GameState, EditorState, PlayerAnswer } from "./types";
 import { supabaseStorage } from "./supabase-storage";
 import { nanoid } from "nanoid";
+import { getUserFingerprint, isGameCreatedByCurrentUser } from "./user-fingerprint";
 
 interface SupabaseGameStore {
   currentGame: GameContent | null;
@@ -69,7 +70,9 @@ export const useSupabaseGameStore = create<SupabaseGameStore>()(
       },
 
       loadGames: async () => {
-        const games = await supabaseStorage.games.getAll();
+        // Only load games created by the current user
+        const currentFingerprint = getUserFingerprint();
+        const games = await supabaseStorage.games.getByCreatorFingerprint(currentFingerprint);
         set({ games });
       },
 

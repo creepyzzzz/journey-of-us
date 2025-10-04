@@ -15,6 +15,8 @@ import { GameContent } from "@/lib/types";
 import { format } from "date-fns";
 import { generateShareableURL } from "@/lib/slug-generator";
 import { useToast } from "@/hooks/use-toast";
+import { useTouchPrevention } from "@/hooks/use-touch-prevention";
+import { useInteractiveTouch } from "@/hooks/use-interactive-touch";
 import { useState } from "react";
 
 interface GameCardProps {
@@ -27,6 +29,8 @@ export function GameCard({ game, onClick, onDelete }: GameCardProps) {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+  const { handleTouchStart, handleTouchMove, handleTouchEnd, handleClick } = useTouchPrevention();
+  const { handleInteractiveTouch, handleInteractiveClick } = useInteractiveTouch();
   
   const totalItems =
     game.truths.length +
@@ -54,7 +58,8 @@ export function GameCard({ game, onClick, onDelete }: GameCardProps) {
     public: <Globe className="h-3 w-3" />,
   };
 
-  const handleCopyLink = async (e: React.MouseEvent) => {
+  const handleCopyLink = async (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
     e.stopPropagation(); // Prevent card click
     
     if (!game.slug) {
@@ -75,6 +80,7 @@ export function GameCard({ game, onClick, onDelete }: GameCardProps) {
       toast({
         title: "Link copied to clipboard ❤️",
         description: "Share this link with your partner to let them play your journey!",
+        variant: "success",
       });
     } catch (error) {
       toast({
@@ -95,17 +101,14 @@ export function GameCard({ game, onClick, onDelete }: GameCardProps) {
         className={`cursor-pointer overflow-hidden hover:shadow-lg transition-all duration-200 touch-manipulation ${
           isNavigating ? 'opacity-70 pointer-events-none scale-95' : 'hover:scale-105'
         }`}
-        onClick={handleCardClick}
-        onTouchEnd={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (!isNavigating) {
-            handleCardClick();
-          }
-        }}
+        onClick={(e) => handleClick(e, handleCardClick)}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={(e) => handleTouchEnd(e, handleCardClick)}
         style={{
           background: game.coverGradient || "linear-gradient(135deg, #fda4af 0%, #d8b4fe 100%)",
           WebkitTapHighlightColor: 'transparent',
+          touchAction: 'manipulation'
         }}
       >
         <CardHeader className="text-white p-4 sm:p-6">
@@ -130,9 +133,14 @@ export function GameCard({ game, onClick, onDelete }: GameCardProps) {
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 text-white hover:bg-white/20 hover:text-white"
-                  onClick={handleCopyLink}
+                  onClick={(e) => handleInteractiveClick(e, () => handleCopyLink(e))}
+                  onTouchEnd={(e) => handleInteractiveTouch(e, () => handleCopyLink(e))}
                   title="Copy shareable link"
                   aria-label="Copy shareable link to clipboard"
+                  style={{
+                    WebkitTapHighlightColor: 'transparent',
+                    touchAction: 'manipulation'
+                  }}
                 >
                   {copied ? (
                     <Check className="h-4 w-4" />
@@ -148,18 +156,25 @@ export function GameCard({ game, onClick, onDelete }: GameCardProps) {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-white hover:bg-white/20 hover:text-white"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => handleInteractiveClick(e, () => {})}
+                      onTouchEnd={(e) => handleInteractiveTouch(e, () => {})}
+                      style={{
+                        WebkitTapHighlightColor: 'transparent',
+                        touchAction: 'manipulation'
+                      }}
                     >
                       <MoreVertical className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete();
-                      }}
+                      onClick={(e) => handleInteractiveClick(e, onDelete)}
+                      onTouchEnd={(e) => handleInteractiveTouch(e, onDelete)}
                       className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                      style={{
+                        WebkitTapHighlightColor: 'transparent',
+                        touchAction: 'manipulation'
+                      }}
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete Game

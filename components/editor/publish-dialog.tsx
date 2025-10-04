@@ -35,8 +35,9 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       });
 
       toast({
-        title: "Published!",
+        title: "Published! 🎉",
         description: "Your journey is now shareable",
+        variant: "success",
       });
     } catch (error) {
       toast({
@@ -56,8 +57,9 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     toast({
-      title: "Copied!",
+      title: "Copied! 📋",
       description: "Share link copied to clipboard",
+      variant: "success",
     });
   };
 

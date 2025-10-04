@@ -13,6 +13,7 @@ import {
   Check,
   X,
   Copy,
+  Edit2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -109,8 +110,9 @@ export default function EditorPage() {
   const handleSave = async () => {
     await saveGame();
     toast({
-      title: "Saved!",
+      title: "Saved! 💾",
       description: "Your journey has been saved",
+      variant: "success",
     });
   };
 
@@ -132,6 +134,7 @@ export default function EditorPage() {
       toast({
         title: "Love code copied! 💕",
         description: `"${currentGame.loveCode}" copied to clipboard`,
+        variant: "success",
       });
     } catch (error) {
       toast({
@@ -273,20 +276,54 @@ export default function EditorPage() {
 
   return (
     <motion.div 
-      className="min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-pink-50 mobile-romantic"
+      className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 mobile-romantic"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
+      {/* Floating Hearts Background */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute top-20 left-10 text-pink-200"
+          animate={{ 
+            y: [0, -20, 0],
+            rotate: [0, 10, -10, 0]
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <Heart className="h-8 w-8 fill-current" />
+        </motion.div>
+        <motion.div
+          className="absolute top-40 right-20 text-rose-200"
+          animate={{ 
+            y: [0, 15, 0],
+            rotate: [0, -15, 15, 0]
+          }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        >
+          <Heart className="h-6 w-6 fill-current" />
+        </motion.div>
+        <motion.div
+          className="absolute bottom-32 left-20 text-purple-200"
+          animate={{ 
+            y: [0, -25, 0],
+            rotate: [0, 20, -20, 0]
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        >
+          <Heart className="h-10 w-10 fill-current" />
+        </motion.div>
+      </div>
+
       <motion.header 
-        className="bg-white border-b sticky top-0 z-10 cute-shadow"
+        className="bg-white/80 backdrop-blur-md border-b border-pink-100 sticky top-0 z-10 cute-shadow"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
+        <div className="container mx-auto px-3 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -305,31 +342,54 @@ export default function EditorPage() {
                   }
                 }}
                 disabled={isNavigating}
-                className="h-7 w-7 sm:h-10 sm:w-10 touch-manipulation"
+                className="h-8 w-8 sm:h-10 sm:w-10 touch-manipulation hover:bg-pink-50 rounded-full"
                 style={{ WebkitTapHighlightColor: 'transparent' }}
                 title="Back to Home (Esc or Alt+←)"
               >
                 {isNavigating ? (
-                  <div className="animate-spin h-3 w-3 sm:h-5 sm:w-5 border-2 border-gray-300 border-t-blue-500 rounded-full" />
+                  <div className="animate-spin h-4 w-4 sm:h-5 sm:w-5 border-2 border-pink-300 border-t-pink-500 rounded-full" />
                 ) : (
-                  <ArrowLeft className="h-3 w-3 sm:h-5 sm:w-5" />
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-pink-600" />
                 )}
               </Button>
-              <div className="flex items-center gap-1 sm:gap-2">
-                <Heart className="h-4 w-4 sm:h-6 sm:w-6 text-rose-400 fill-rose-400" />
-                <h1 className="text-sm sm:text-xl font-bold truncate">Journey Editor</h1>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Heart className="h-5 w-5 sm:h-7 sm:w-7 text-pink-500 fill-pink-500" />
+                </motion.div>
+                <div>
+                  <h1 className="text-base sm:text-2xl font-black bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">
+                    Journey Editor
+                  </h1>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Button variant="outline" size="sm" onClick={handlePreview} className="h-7 px-2 sm:px-3 text-xs sm:text-sm touch-manipulation">
-                <Eye className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handlePreview} 
+                className="h-8 px-3 sm:px-4 text-xs sm:text-sm touch-manipulation border-pink-200 hover:bg-pink-50 hover:border-pink-300 rounded-full"
+              >
+                <Eye className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2 text-pink-600" />
                 <span className="hidden sm:inline">Preview</span>
               </Button>
-              <Button variant="outline" size="sm" onClick={handleSave} className="h-7 px-2 sm:px-3 text-xs sm:text-sm touch-manipulation">
-                <Save className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSave} 
+                className="h-8 px-3 sm:px-4 text-xs sm:text-sm touch-manipulation border-green-200 hover:bg-green-50 hover:border-green-300 rounded-full"
+              >
+                <Save className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2 text-green-600" />
                 <span className="hidden sm:inline">Save</span>
               </Button>
-              <Button size="sm" onClick={() => setShowPublishDialog(true)} className="h-7 px-2 sm:px-3 text-xs sm:text-sm touch-manipulation">
+              <Button 
+                size="sm" 
+                onClick={() => setShowPublishDialog(true)} 
+                className="h-8 px-3 sm:px-4 text-xs sm:text-sm touch-manipulation bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-full cute-shadow"
+              >
                 <Share2 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Publish</span>
               </Button>
@@ -339,157 +399,179 @@ export default function EditorPage() {
       </motion.header>
 
       <motion.main 
-        className="container mx-auto px-2 sm:px-4 py-2 sm:py-8"
+        className="container mx-auto px-3 sm:px-6 py-4 sm:py-8"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
+          {/* Journey Info Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-lg sm:rounded-2xl cute-shadow p-3 sm:p-6 md:p-8 mb-3 sm:mb-6"
+            className="bg-gradient-to-br from-white via-pink-50/50 to-rose-50/50 rounded-2xl sm:rounded-3xl cute-shadow p-4 sm:p-8 mb-6 sm:mb-8 border border-pink-100"
           >
-            <div className="space-y-2 sm:space-y-4">
-              <div>
-                <label className="text-xs sm:text-sm font-medium mb-1 sm:mb-2 block">Game Title</label>
-                <Input
-                  value={currentGame.title}
-                  onChange={(e) => updateGame({ title: e.target.value })}
-                  placeholder="My Journey of Love"
-                  className="text-sm sm:text-xl md:text-2xl font-bold h-8 sm:h-auto"
-                />
-              </div>
-              <div>
-                <label className="text-xs sm:text-sm font-medium mb-1 sm:mb-2 block">Description</label>
-                <Textarea
-                  value={currentGame.description || ""}
-                  onChange={(e) => updateGame({ description: e.target.value })}
-                  placeholder="A beautiful journey to deepen our connection..."
-                  rows={2}
-                  className="text-xs sm:text-base h-16 sm:h-auto"
-                />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
-                <div>
-                  <label className="text-xs sm:text-sm font-medium mb-1 sm:mb-2 block">Your Name</label>
+            <div className="space-y-4 sm:space-y-6">
+
+              <div className="space-y-6 sm:space-y-8">
+                {/* Journey Title */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 justify-center">
+                    <Edit2 className="h-4 w-4 text-pink-500" />
+                    <label className="text-sm font-semibold text-pink-600 uppercase tracking-wide">Journey Title</label>
+                  </div>
                   <Input
-                    value={currentGame.creatorName || ""}
-                    onChange={(e) => updateGame({ creatorName: e.target.value })}
-                    placeholder="Creator"
-                    className="h-8 sm:h-auto text-xs sm:text-base"
+                    value={currentGame.title}
+                    onChange={(e) => updateGame({ title: e.target.value })}
+                    placeholder="✨ Our Love Story ✨"
+                    className="text-lg sm:text-2xl md:text-3xl font-bold h-14 sm:h-18 border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 text-center placeholder:text-pink-300 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200"
                   />
                 </div>
-                <div>
-                  <label className="text-xs sm:text-sm font-medium mb-1 sm:mb-2 block">Partner's Name</label>
-                  <Input
-                    value={currentGame.partnerNameHint || ""}
-                    onChange={(e) => updateGame({ partnerNameHint: e.target.value })}
-                    placeholder="Partner"
-                    className="h-8 sm:h-auto text-xs sm:text-base"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs sm:text-sm font-medium mb-1 sm:mb-2 block">Custom Love Code (Optional)</label>
-                <div className="relative">
-                  <Input
-                    value={currentGame.loveCode || ""}
-                    onChange={(e) => {
-                      const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-                      updateGame({ loveCode: value });
-                    }}
-                    placeholder="Enter a custom code (e.g., LOVEYOU, HEARTS, etc.)"
-                    className="h-8 sm:h-auto font-mono text-center pr-16 sm:pr-20 text-xs sm:text-base"
-                    maxLength={20}
-                  />
-                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-                    {currentGame.loveCode && currentGame.loveCode.length >= 3 && (
-                      <>
-                        {loveCodeStatus === 'checking' && (
-                          <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-blue-500 rounded-full" />
-                        )}
-                        {loveCodeStatus === 'available' && (
-                          <Check className="h-4 w-4 text-green-500" />
-                        )}
-                        {loveCodeStatus === 'taken' && (
-                          <X className="h-4 w-4 text-red-500" />
-                        )}
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleCopyLoveCode}
-                                className="h-6 w-6 text-gray-500 hover:text-pink-600 hover:bg-pink-50"
-                                title="Copy love code"
-                              >
-                                {loveCodeCopied ? (
-                                  <Check className="h-3 w-3 text-green-500" />
-                                ) : (
-                                  <Copy className="h-3 w-3" />
-                                )}
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{loveCodeCopied ? "Copied!" : "Copy love code"}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </>
-                    )}
+
+                {/* Names Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 justify-center">
+                    <Heart className="h-4 w-4 text-pink-500 fill-pink-500" />
+                    <label className="text-sm font-semibold text-pink-600 uppercase tracking-wide">Love Names</label>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-pink-500 uppercase tracking-wide ml-2">Your Name</label>
+                      <Input
+                        value={currentGame.creatorName || ""}
+                        onChange={(e) => updateGame({ creatorName: e.target.value })}
+                        placeholder="💕 Your Name"
+                        className="h-12 sm:h-14 text-base sm:text-lg font-semibold border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-2xl text-center placeholder:text-pink-400 shadow-sm hover:shadow-md transition-all duration-200"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-pink-500 uppercase tracking-wide ml-2">Partner's Name</label>
+                      <Input
+                        value={currentGame.partnerNameHint || ""}
+                        onChange={(e) => updateGame({ partnerNameHint: e.target.value })}
+                        placeholder="💖 Partner's Name"
+                        className="h-12 sm:h-14 text-base sm:text-lg font-semibold border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-2xl text-center placeholder:text-pink-400 shadow-sm hover:shadow-md transition-all duration-200"
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="mt-1">
-                  {loveCodeStatus === 'available' && currentGame.loveCode && (
-                    <p className="text-xs text-green-600">✓ Love code is available!</p>
-                  )}
-                  {loveCodeStatus === 'taken' && (
-                    <p className="text-xs text-red-600">✗ Love code is already in use</p>
-                  )}
-                  {loveCodeStatus === 'idle' && (
-                    <p className="text-xs text-muted-foreground">
-                      Leave empty to auto-generate when publishing. Use letters and numbers only.
-                    </p>
-                  )}
+
+                {/* Love Code Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 justify-center">
+                    <Sparkles className="h-4 w-4 text-pink-500" />
+                    <label className="text-sm font-semibold text-pink-600 uppercase tracking-wide">Love Code</label>
+                    <span className="text-xs text-pink-400 bg-pink-100 px-2 py-1 rounded-full">Optional</span>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      value={currentGame.loveCode || ""}
+                      onChange={(e) => {
+                        const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                        updateGame({ loveCode: value });
+                      }}
+                      placeholder="💝 LOVE123"
+                      className="h-12 sm:h-14 font-mono font-bold text-center pr-16 sm:pr-20 text-base sm:text-lg border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-2xl placeholder:text-pink-400 shadow-sm hover:shadow-md transition-all duration-200"
+                      maxLength={20}
+                    />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+                      {currentGame.loveCode && currentGame.loveCode.length >= 3 && (
+                        <>
+                          {loveCodeStatus === 'checking' && (
+                            <div className="animate-spin h-4 w-4 border-2 border-pink-300 border-t-pink-500 rounded-full" />
+                          )}
+                          {loveCodeStatus === 'available' && (
+                            <Check className="h-4 w-4 text-green-500" />
+                          )}
+                          {loveCodeStatus === 'taken' && (
+                            <X className="h-4 w-4 text-red-500" />
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleCopyLoveCode}
+                            className="h-7 w-7 text-pink-500 hover:text-pink-600 hover:bg-pink-50 rounded-full"
+                          >
+                            {loveCodeCopied ? (
+                              <Check className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </motion.div>
 
+          {/* Content Editor Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-lg sm:rounded-2xl cute-shadow overflow-hidden"
+            className="bg-gradient-to-br from-white via-pink-50/30 to-rose-50/30 rounded-2xl sm:rounded-3xl cute-shadow overflow-hidden border border-pink-100"
           >
             <Tabs defaultValue="truths" className="w-full">
-              <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 overflow-x-auto scrollbar-hide">
-                <TabsTrigger value="truths" className="rounded-none text-xs sm:text-sm px-1 sm:px-4 py-2 min-w-0 flex-shrink-0">
-                  Truths
-                </TabsTrigger>
-                <TabsTrigger value="dares" className="rounded-none text-xs sm:text-sm px-1 sm:px-4 py-2 min-w-0 flex-shrink-0">
-                  Dares
-                </TabsTrigger>
-                <TabsTrigger value="secrets" className="rounded-none text-xs sm:text-sm px-1 sm:px-4 py-2 min-w-0 flex-shrink-0">
-                  Secrets
-                </TabsTrigger>
-                <TabsTrigger value="memories" className="rounded-none text-xs sm:text-sm px-1 sm:px-4 py-2 min-w-0 flex-shrink-0">
-                  Memories
-                </TabsTrigger>
-                <TabsTrigger value="romantic" className="rounded-none text-xs sm:text-sm px-1 sm:px-4 py-2 min-w-0 flex-shrink-0">
-                  Romantic
-                </TabsTrigger>
-                <TabsTrigger value="guessing" className="rounded-none text-xs sm:text-sm px-1 sm:px-4 py-2 min-w-0 flex-shrink-0">
-                  Guessing
-                </TabsTrigger>
-                <TabsTrigger value="answers" className="rounded-none text-xs sm:text-sm px-1 sm:px-4 py-2 min-w-0 flex-shrink-0">
-                  Answers
-                </TabsTrigger>
-              </TabsList>
+              {/* Custom Tabs Header */}
+              <div className="bg-gradient-to-r from-pink-50 to-rose-50 border-b border-pink-100">
+                <TabsList className="w-full justify-start border-none rounded-none h-auto p-0 overflow-x-auto scrollbar-hide bg-transparent">
+                  <TabsTrigger 
+                    value="truths" 
+                    className="rounded-none text-sm sm:text-base px-3 sm:px-6 py-4 min-w-0 flex-shrink-0 border-b-2 border-transparent data-[state=active]:border-pink-500 data-[state=active]:bg-pink-50 data-[state=active]:text-pink-700 hover:bg-pink-50/50 transition-all duration-200 flex items-center gap-2"
+                  >
+                    <span className="text-lg">❤️</span>
+                    <span className="font-semibold">Truth</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="dares" 
+                    className="rounded-none text-sm sm:text-base px-3 sm:px-6 py-4 min-w-0 flex-shrink-0 border-b-2 border-transparent data-[state=active]:border-pink-500 data-[state=active]:bg-pink-50 data-[state=active]:text-pink-700 hover:bg-pink-50/50 transition-all duration-200 flex items-center gap-2"
+                  >
+                    <span className="text-lg">⭐</span>
+                    <span className="font-semibold">Dare</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="secrets" 
+                    className="rounded-none text-sm sm:text-base px-3 sm:px-6 py-4 min-w-0 flex-shrink-0 border-b-2 border-transparent data-[state=active]:border-pink-500 data-[state=active]:bg-pink-50 data-[state=active]:text-pink-700 hover:bg-pink-50/50 transition-all duration-200 flex items-center gap-2"
+                  >
+                    <span className="text-lg">🤫</span>
+                    <span className="font-semibold">Secret</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="memories" 
+                    className="rounded-none text-sm sm:text-base px-3 sm:px-6 py-4 min-w-0 flex-shrink-0 border-b-2 border-transparent data-[state=active]:border-pink-500 data-[state=active]:bg-pink-50 data-[state=active]:text-pink-700 hover:bg-pink-50/50 transition-all duration-200 flex items-center gap-2"
+                  >
+                    <span className="text-lg">💭</span>
+                    <span className="font-semibold">Memory</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="romantic" 
+                    className="rounded-none text-sm sm:text-base px-3 sm:px-6 py-4 min-w-0 flex-shrink-0 border-b-2 border-transparent data-[state=active]:border-pink-500 data-[state=active]:bg-pink-50 data-[state=active]:text-pink-700 hover:bg-pink-50/50 transition-all duration-200 flex items-center gap-2"
+                  >
+                    <span className="text-lg">💕</span>
+                    <span className="font-semibold">Romance</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="guessing" 
+                    className="rounded-none text-sm sm:text-base px-3 sm:px-6 py-4 min-w-0 flex-shrink-0 border-b-2 border-transparent data-[state=active]:border-pink-500 data-[state=active]:bg-pink-50 data-[state=active]:text-pink-700 hover:bg-pink-50/50 transition-all duration-200 flex items-center gap-2"
+                  >
+                    <span className="text-lg">🎯</span>
+                    <span className="font-semibold">Guessing</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="answers" 
+                    className="rounded-none text-sm sm:text-base px-3 sm:px-6 py-4 min-w-0 flex-shrink-0 border-b-2 border-transparent data-[state=active]:border-pink-500 data-[state=active]:bg-pink-50 data-[state=active]:text-pink-700 hover:bg-pink-50/50 transition-all duration-200 flex items-center gap-2"
+                  >
+                    <span className="text-lg">📊</span>
+                    <span className="font-semibold">Answers</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-              <div className="p-2 sm:p-4 md:p-6">
+              {/* Tab Content */}
+              <div className="p-4 sm:p-6 md:p-8">
                 <TabsContent value="truths" className="mt-0">
                   <TruthsEditor />
                 </TabsContent>

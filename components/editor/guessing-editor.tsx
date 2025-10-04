@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { nanoid } from "nanoid";
-import { Plus, Trash2, Edit2, Check, X, CheckCircle } from "lucide-react";
+import { Plus, Trash2, Edit2, Check, X, CheckCircle, Sparkles, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -134,36 +134,47 @@ export function GuessingEditor() {
   };
 
   return (
-    <div className="space-y-4">
-      <Card className="bg-blue-50">
-        <CardContent className="p-4">
-          <div className="space-y-3">
+    <div className="space-y-6">
+
+      {/* Add New Question */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <Card className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl border border-pink-100">
+          <CardContent className="p-4 sm:p-6">
+            <div className="space-y-4">
+          
+          <Input
+            value={newQuestion.label}
+            onChange={(e) => setNewQuestion({ ...newQuestion, label: e.target.value })}
+            placeholder="🎯 Add a guessing question..."
+            className="border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl text-base font-semibold placeholder:text-pink-400 shadow-sm hover:shadow-md transition-all duration-200"
+          />
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Select
+              value={newQuestion.type}
+              onValueChange={(value: "text" | "choice") =>
+                setNewQuestion({ ...newQuestion, type: value, choices: value === "text" ? [] : newQuestion.choices, correctChoiceIndex: value === "text" ? -1 : newQuestion.correctChoiceIndex })
+              }
+            >
+              <SelectTrigger className="border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="text">Text Answer</SelectItem>
+                <SelectItem value="choice">Multiple Choice</SelectItem>
+              </SelectContent>
+            </Select>
             <Input
-              value={newQuestion.label}
-              onChange={(e) => setNewQuestion({ ...newQuestion, label: e.target.value })}
-              placeholder="What's my favorite color?"
+              value={newQuestion.answer}
+              onChange={(e) => setNewQuestion({ ...newQuestion, answer: e.target.value })}
+              placeholder="💡 Your answer (optional)"
+              className="border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl font-semibold placeholder:text-pink-400 shadow-sm hover:shadow-md transition-all duration-200"
             />
-            <div className="grid grid-cols-2 gap-2">
-              <Select
-                value={newQuestion.type}
-                onValueChange={(value: "text" | "choice") =>
-                  setNewQuestion({ ...newQuestion, type: value, choices: value === "text" ? [] : newQuestion.choices, correctChoiceIndex: value === "text" ? -1 : newQuestion.correctChoiceIndex })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="text">Text Answer</SelectItem>
-                  <SelectItem value="choice">Multiple Choice</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                value={newQuestion.answer}
-                onChange={(e) => setNewQuestion({ ...newQuestion, answer: e.target.value })}
-                placeholder="Your answer (optional)"
-              />
-            </div>
+          </div>
             
             {newQuestion.type === "choice" && (
               <div className="space-y-3">
@@ -192,7 +203,7 @@ export function GuessingEditor() {
                       value={choice}
                       onChange={(e) => updateNewChoice(index, e.target.value)}
                       placeholder={`Choice ${index + 1}`}
-                      className="flex-1"
+                      className="flex-1 border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all duration-200"
                     />
                     <Button
                       onClick={() => removeNewChoice(index)}
@@ -222,13 +233,17 @@ export function GuessingEditor() {
                 )}
               </div>
             )}
-            <Button onClick={handleAdd} className="w-full">
+            <Button 
+              onClick={handleAdd} 
+              className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 rounded-xl cute-shadow"
+            >
               <Plus className="h-4 w-4 mr-2" />
               Add Question
             </Button>
           </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       <div className="space-y-2">
         <AnimatePresence>
@@ -239,16 +254,16 @@ export function GuessingEditor() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: -100 }}
             >
-              <Card>
-                <CardContent className="p-4">
+              <Card className="border-2 border-pink-100 hover:border-pink-200 transition-all duration-200 shadow-sm hover:shadow-md">
+                <CardContent className="p-4 sm:p-6">
                   {editingQuestion === question.id ? (
                     // Edit Mode
                     <div className="space-y-3">
                       <Textarea
                         value={editForm.label}
                         onChange={(e) => setEditForm({ ...editForm, label: e.target.value })}
-                        placeholder="What's my favorite color?"
-                        className="min-h-[60px]"
+                        placeholder="🎯 What's my favorite color?"
+                        className="min-h-[60px] border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all duration-200"
                       />
                       <div className="grid grid-cols-2 gap-2">
                         <Select
@@ -257,7 +272,7 @@ export function GuessingEditor() {
                             setEditForm({ ...editForm, type: value, choices: value === "text" ? [] : editForm.choices })
                           }
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-200">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -268,7 +283,8 @@ export function GuessingEditor() {
                         <Input
                           value={editForm.answer}
                           onChange={(e) => setEditForm({ ...editForm, answer: e.target.value })}
-                          placeholder="Your answer (optional)"
+                          placeholder="💡 Your answer (optional)"
+                          className="border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all duration-200"
                         />
                       </div>
                       
@@ -299,7 +315,7 @@ export function GuessingEditor() {
                                 value={choice}
                                 onChange={(e) => updateChoice(index, e.target.value)}
                                 placeholder={`Choice ${index + 1}`}
-                                className="flex-1"
+                                className="flex-1 border-2 border-pink-200 bg-white/80 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all duration-200"
                               />
                               <Button
                                 onClick={() => removeChoice(index)}
@@ -344,7 +360,7 @@ export function GuessingEditor() {
                     // Read Mode
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <p className="font-medium">{question.label}</p>
+                        <p className="font-bold text-lg text-gray-800">{question.label}</p>
                         <p className="text-sm text-muted-foreground">
                           Type: {question.type}
                           {question.creatorAnswer && (
@@ -409,9 +425,18 @@ export function GuessingEditor() {
       </div>
 
       {questions.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          <p>No guessing questions yet. Add your first one above!</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center py-16"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <Sparkles className="h-20 w-20 text-pink-200 mx-auto" />
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );

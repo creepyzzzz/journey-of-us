@@ -78,120 +78,157 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Prevent accidental touches during scroll on all devices */
+    touch-action: pan-y;
   }
 }
 
 @layer utilities {
   .romantic-gradient {
-    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 25%, #fdf2f8 50%, #fce7f3 75%, #fdf2f8 100%);
+    background: linear-gradient(
+      135deg,
+      #fdf2f8 0%,
+      #fce7f3 25%,
+      #fdf2f8 50%,
+      #fce7f3 75%,
+      #fdf2f8 100%
+    );
   }
-  
+
   .pinkish-gradient {
-    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 25%, #fdf2f8 50%, #fce7f3 75%, #fdf2f8 100%);
+    background: linear-gradient(
+      135deg,
+      #fdf2f8 0%,
+      #fce7f3 25%,
+      #fdf2f8 50%,
+      #fce7f3 75%,
+      #fdf2f8 100%
+    );
   }
-  
+
   .heart-beat {
     animation: heartbeat 1.5s ease-in-out infinite;
   }
-  
+
   .sparkle {
     animation: sparkle 2s ease-in-out infinite;
   }
-  
+
   .float {
     animation: float 3s ease-in-out infinite;
   }
-  
+
   .mobile-romantic {
     @apply bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100;
   }
-  
+
   .cute-shadow {
-    box-shadow: 0 4px 20px rgba(244, 114, 182, 0.15), 0 2px 8px rgba(236, 72, 153, 0.1);
+    box-shadow:
+      0 4px 20px rgba(244, 114, 182, 0.15),
+      0 2px 8px rgba(236, 72, 153, 0.1);
   }
-  
+
   .romantic-border {
     border: 2px solid rgba(244, 114, 182, 0.2);
   }
-  
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .gentle-bounce {
     animation: gentle-bounce 2s ease-in-out infinite;
   }
-  
+
   .romantic-glow {
     animation: romantic-glow 3s ease-in-out infinite;
   }
-  
+
   .cute-pulse {
     animation: cute-pulse 2s ease-in-out infinite;
   }
-  
+
   .mobile-touch {
     @apply active:scale-95 transition-transform duration-150;
   }
-  
+
   .swipe-hint {
     @apply text-xs text-muted-foreground opacity-60;
   }
-  
+
   .romantic-text-shadow {
     text-shadow: 0 2px 4px rgba(244, 114, 182, 0.3);
   }
-  
+
   .glass-effect {
     backdrop-filter: blur(10px);
     background: rgba(255, 255, 255, 0.8);
   }
-  
+
   .mobile-safe-area {
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
   }
-  
+
   .touch-target {
     @apply min-h-[44px] min-w-[44px];
   }
-  
+
   .romantic-fade-in {
     animation: romantic-fade-in 0.6s ease-out;
   }
-  
+
   .romantic-slide-up {
     animation: romantic-slide-up 0.8s ease-out;
   }
-  
+
   .romantic-scale-in {
     animation: romantic-scale-in 0.5s ease-out;
   }
-  
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .toast-heart-beat {
+    animation: toast-heart-beat 2s ease-in-out infinite;
+  }
+
+  .toast-float-in {
+    animation: toast-float-in 0.6s ease-out;
+  }
+
+  .toast-sparkle {
+    animation: toast-sparkle 2s ease-in-out infinite;
+  }
+
+  .toast-romantic-glow {
+    box-shadow:
+      0 0 20px rgba(244, 114, 182, 0.3),
+      0 0 40px rgba(236, 72, 153, 0.2);
   }
 }
 
 @keyframes heartbeat {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -200,7 +237,8 @@
 }
 
 @keyframes sparkle {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(0.8) rotate(0deg);
   }
@@ -211,7 +249,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -220,7 +259,8 @@
 }
 
 @keyframes gentle-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -229,16 +269,20 @@
 }
 
 @keyframes romantic-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(244, 114, 182, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(244, 114, 182, 0.5), 0 0 40px rgba(236, 72, 153, 0.3);
+    box-shadow:
+      0 0 30px rgba(244, 114, 182, 0.5),
+      0 0 40px rgba(236, 72, 153, 0.3);
   }
 }
 
 @keyframes cute-pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
@@ -281,6 +325,41 @@
   }
 }
 
+@keyframes toast-heart-beat {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(244, 114, 182, 0.2);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 30px rgba(244, 114, 182, 0.4);
+  }
+}
+
+@keyframes toast-float-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-sparkle {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) rotate(180deg);
+  }
+}
+
 /* Custom scrollbar for romantic feel */
 ::-webkit-scrollbar {
   width: 8px;
@@ -306,27 +385,55 @@
     min-height: 100vh;
     min-height: 100dvh; /* Dynamic viewport height for mobile */
   }
-  
+
   .mobile-touch {
     @apply active:scale-95 transition-transform duration-150;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  
+
   /* Improve touch targets on mobile */
-  button, [role="button"] {
+  button,
+  [role="button"] {
     @apply min-h-[44px] min-w-[44px];
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  
+
   /* Better text rendering on mobile */
   body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* Prevent accidental touches during scroll */
+    touch-action: pan-y;
   }
-  
+
   /* Prevent zoom on input focus */
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     font-size: 16px;
+  }
+
+  /* Prevent accidental button clicks during scroll */
+  .scroll-container {
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ensure buttons don't trigger during scroll gestures */
+  button,
+  [role="button"],
+  .clickable {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 }
 
@@ -343,7 +450,7 @@
   .cute-shadow {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   }
-  
+
   .romantic-border {
     border: 2px solid rgba(0, 0, 0, 0.3);
   }
@@ -362,7 +469,7 @@
   .romantic-scale-in {
     animation: none;
   }
-  
+
   * {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;

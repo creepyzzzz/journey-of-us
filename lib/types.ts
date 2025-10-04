@@ -38,6 +38,7 @@ export interface GameContent {
   slug?: string;
   loveCode?: string;
   passphraseProtected?: boolean;
+  creatorFingerprint?: string;
 }
 
 export interface GameState {
@@ -100,6 +101,54 @@ export interface GameSession {
   startedAt: string;
   completedAt?: string;
   createdFromSlug?: string;
+  // Multiplayer fields
+  isMultiplayer?: boolean;
+  gameCode?: string;
+  hostPlayerId?: string;
+  joinedPlayers?: string[];
+  currentTurn?: TurnInfo;
+  wheelHistory?: WheelSpin[];
+}
+
+export interface TurnInfo {
+  playerId: string;
+  playerName: string;
+  turnType: "player1" | "player2" | "both";
+  levelId: number;
+  questionId?: string;
+  startedAt: string;
+  completedAt?: string;
+}
+
+export interface WheelSpin {
+  id: string;
+  result: "player1" | "player2" | "both";
+  timestamp: string;
+  levelId: number;
+  questionId?: string;
+}
+
+export interface MultiplayerGameRoom {
+  id: ID;
+  gameId: ID;
+  gameCode: string;
+  hostPlayerId: string;
+  hostPlayerName: string;
+  joinedPlayers: PlayerInfo[];
+  status: "waiting" | "active" | "completed";
+  currentTurn?: TurnInfo;
+  wheelHistory: WheelSpin[];
+  createdAt: string;
+  startedAt?: string;
+  completedAt?: string;
+}
+
+export interface PlayerInfo {
+  id: string;
+  name: string;
+  joinedAt: string;
+  isHost: boolean;
+  isReady: boolean;
 }
 
 export interface GameAnalytics {

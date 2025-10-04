@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
 import { GameContent } from "./types";
+import { getUserFingerprint } from "./user-fingerprint";
 
 export const createEmptyGame = (title: string = "Untitled Journey"): GameContent => {
   return {
@@ -20,6 +21,7 @@ export const createEmptyGame = (title: string = "Untitled Journey"): GameContent
     version: 1,
     published: false,
     visibility: "private",
+    creatorFingerprint: getUserFingerprint(),
   };
 };
 
@@ -105,5 +107,6 @@ export const createStarterGame = (): GameContent => {
     ...starterGameContent,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    creatorFingerprint: getUserFingerprint(),
   };
 };

@@ -37,6 +37,7 @@ export const gameContentSchema = z.object({
   slug: z.string().optional(),
   loveCode: z.string().optional(),
   passphraseProtected: z.boolean().optional(),
+  creatorFingerprint: z.string().optional(),
 });
 
 export const gameStateSchema = z.object({
@@ -81,6 +82,47 @@ export const swipeGestureStateSchema = z.object({
   endY: z.number(),
 });
 
+export const turnInfoSchema = z.object({
+  playerId: z.string(),
+  playerName: z.string(),
+  turnType: z.enum(["player1", "player2", "both"]),
+  levelId: z.number(),
+  questionId: z.string().optional(),
+  startedAt: z.string(),
+  completedAt: z.string().optional(),
+});
+
+export const wheelSpinSchema = z.object({
+  id: z.string(),
+  result: z.enum(["player1", "player2", "both"]),
+  timestamp: z.string(),
+  levelId: z.number(),
+  questionId: z.string().optional(),
+});
+
+export const playerInfoSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  joinedAt: z.string(),
+  isHost: z.boolean(),
+  isReady: z.boolean(),
+});
+
+export const multiplayerGameRoomSchema = z.object({
+  id: z.string(),
+  gameId: z.string(),
+  gameCode: z.string(),
+  hostPlayerId: z.string(),
+  hostPlayerName: z.string(),
+  joinedPlayers: z.array(playerInfoSchema),
+  status: z.enum(["waiting", "active", "completed"]),
+  currentTurn: turnInfoSchema.optional(),
+  wheelHistory: z.array(wheelSpinSchema),
+  createdAt: z.string(),
+  startedAt: z.string().optional(),
+  completedAt: z.string().optional(),
+});
+
 export const gameSessionSchema = z.object({
   id: z.string(),
   gameId: z.string(),
@@ -97,6 +139,13 @@ export const gameSessionSchema = z.object({
   startedAt: z.string(),
   completedAt: z.string().optional(),
   createdFromSlug: z.string().optional(),
+  // Multiplayer fields
+  isMultiplayer: z.boolean().optional(),
+  gameCode: z.string().optional(),
+  hostPlayerId: z.string().optional(),
+  joinedPlayers: z.array(z.string()).optional(),
+  currentTurn: turnInfoSchema.optional(),
+  wheelHistory: z.array(wheelSpinSchema).optional(),
 });
 
 export const gameAnalyticsSchema = z.object({
@@ -153,3 +202,7 @@ export type GameAnalytics = z.infer<typeof gameAnalyticsSchema>;
 export type UserPreferences = z.infer<typeof userPreferencesSchema>;
 export type GameTemplate = z.infer<typeof gameTemplateSchema>;
 export type ImportExportData = z.infer<typeof importExportDataSchema>;
+export type TurnInfo = z.infer<typeof turnInfoSchema>;
+export type WheelSpin = z.infer<typeof wheelSpinSchema>;
+export type PlayerInfo = z.infer<typeof playerInfoSchema>;
+export type MultiplayerGameRoom = z.infer<typeof multiplayerGameRoomSchema>;

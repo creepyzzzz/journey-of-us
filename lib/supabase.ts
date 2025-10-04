@@ -1,7 +1,21 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+console.log('Environment variables:', {
+  supabaseUrl: supabaseUrl ? 'SET' : 'NOT SET',
+  supabaseAnonKey: supabaseAnonKey ? 'SET' : 'NOT SET',
+  allEnvVars: Object.keys(process.env).filter(key => key.startsWith('NEXT_PUBLIC_'))
+})
+
+if (!supabaseUrl) {
+  throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL environment variable')
+}
+
+if (!supabaseAnonKey) {
+  throw new Error('Missing NEXT_PUBLIC_SUPABASE_ANON_KEY environment variable')
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
@@ -31,6 +45,7 @@ export interface Database {
           slug: string | null
           love_code: string | null
           passphrase_protected: boolean | null
+          creator_fingerprint: string | null
         }
         Insert: {
           id: string
@@ -53,6 +68,7 @@ export interface Database {
           slug?: string | null
           love_code?: string | null
           passphrase_protected?: boolean | null
+          creator_fingerprint?: string | null
         }
         Update: {
           id?: string
@@ -75,6 +91,7 @@ export interface Database {
           slug?: string | null
           love_code?: string | null
           passphrase_protected?: boolean | null
+          creator_fingerprint?: string | null
         }
       }
       game_sessions: {
@@ -180,6 +197,50 @@ export interface Database {
           average_play_time?: number
           most_popular_level?: number
           last_played?: string
+        }
+      }
+      multiplayer_rooms: {
+        Row: {
+          id: string
+          game_id: string
+          game_code: string
+          host_player_id: string
+          host_player_name: string
+          joined_players: any[]
+          status: 'waiting' | 'active' | 'completed'
+          current_turn: any | null
+          wheel_history: any[]
+          created_at: string
+          started_at: string | null
+          completed_at: string | null
+        }
+        Insert: {
+          id: string
+          game_id: string
+          game_code: string
+          host_player_id: string
+          host_player_name: string
+          joined_players?: any[]
+          status?: 'waiting' | 'active' | 'completed'
+          current_turn?: any | null
+          wheel_history?: any[]
+          created_at?: string
+          started_at?: string | null
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          game_id?: string
+          game_code?: string
+          host_player_id?: string
+          host_player_name?: string
+          joined_players?: any[]
+          status?: 'waiting' | 'active' | 'completed'
+          current_turn?: any | null
+          wheel_history?: any[]
+          created_at?: string
+          started_at?: string | null
+          completed_at?: string | null
         }
       }
     }
