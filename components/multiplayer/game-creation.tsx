@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Copy, Share2, Users, Gamepad2 } from 'lucide-react';
-import { useMultiplayerStore } from '@/lib/multiplayer-store';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Copy, Share2, Users, Gamepad2 } from "lucide-react";
+import { useMultiplayerStore } from "@/lib/multiplayer-store";
+import { toast } from "sonner";
 
 interface GameCreationProps {
   gameId: string;
@@ -15,13 +15,13 @@ interface GameCreationProps {
 }
 
 export function GameCreation({ gameId, onRoomCreated }: GameCreationProps) {
-  const [hostName, setHostName] = useState('');
+  const [hostName, setHostName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const { createRoom } = useMultiplayerStore();
 
   const handleCreateRoom = async () => {
     if (!hostName.trim()) {
-      toast.error('Please enter your name');
+      toast.error("Please enter your name");
       return;
     }
 
@@ -29,9 +29,11 @@ export function GameCreation({ gameId, onRoomCreated }: GameCreationProps) {
     try {
       const room = await createRoom(gameId, hostName.trim());
       onRoomCreated(room);
-      toast.success('Game room created successfully!');
+      toast.success("Game room created successfully!");
     } catch (error) {
-      toast.error(`Failed to create room: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(
+        `Failed to create room: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     } finally {
       setIsCreating(false);
     }
@@ -53,7 +55,10 @@ export function GameCreation({ gameId, onRoomCreated }: GameCreationProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="hostName" className="text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="hostName"
+              className="text-sm font-medium text-gray-700"
+            >
               Your Name
             </Label>
             <Input
@@ -61,7 +66,7 @@ export function GameCreation({ gameId, onRoomCreated }: GameCreationProps) {
               type="text"
               placeholder="Enter your name"
               value={hostName}
-              onChange={(e) => setHostName(e.target.value)}
+              onChange={e => setHostName(e.target.value)}
               className="w-full"
               maxLength={50}
             />
@@ -86,7 +91,10 @@ export function GameCreation({ gameId, onRoomCreated }: GameCreationProps) {
           </Button>
 
           <div className="text-center text-sm text-gray-500">
-            <p>After creating the room, you&apos;ll get a game code to share with your partner.</p>
+            <p>
+              After creating the room, you&apos;ll get a game code to share with
+              your partner.
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -101,46 +109,53 @@ interface WaitingRoomProps {
 
 export function WaitingRoom({ room, onGameStart }: WaitingRoomProps) {
   const [copied, setCopied] = useState(false);
-  const { isHost, updatePlayerReady } = useMultiplayerStore();
+  const { isHost, updatePlayerReady, playerId, currentRoom } =
+    useMultiplayerStore();
+
+  // Use currentRoom from store for real-time updates, fallback to prop
+  const roomData = currentRoom || room;
 
   const copyGameCode = async () => {
     try {
-      await navigator.clipboard.writeText(room.gameCode);
+      await navigator.clipboard.writeText(roomData.gameCode);
       setCopied(true);
-      toast.success('Game code copied to clipboard!');
+      toast.success("Game code copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      toast.error('Failed to copy game code');
+      toast.error("Failed to copy game code");
     }
   };
 
   const shareGameLink = async () => {
-    const gameLink = `${window.location.origin}/play/${room.gameId}?join=${room.gameCode}`;
+    const gameLink = `${window.location.origin}/play/${roomData.gameId}?join=${roomData.gameCode}`;
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'Join my game!',
-          text: `Join my Journey of Us game! Use code: ${room.gameCode}`,
-          url: gameLink
+          title: "Join my game!",
+          text: `Join my Journey of Us game! Use code: ${roomData.gameCode}`,
+          url: gameLink,
         });
       } else {
         await navigator.clipboard.writeText(gameLink);
-        toast.success('Game link copied to clipboard!');
+        toast.success("Game link copied to clipboard!");
       }
     } catch (error) {
-      toast.error('Failed to share game link');
+      toast.error("Failed to share game link");
     }
   };
 
   const handleReadyToggle = async () => {
-    const currentPlayer = room.joinedPlayers.find((p: any) => p.id === useMultiplayerStore.getState().playerId);
+    const currentPlayer = roomData.joinedPlayers.find(
+      (p: any) => p.id === playerId
+    );
     if (currentPlayer) {
       await updatePlayerReady(currentPlayer.id, !currentPlayer.isReady);
     }
   };
 
-  const allPlayersReady = room.joinedPlayers.every((p: any) => p.isReady);
-  const canStartGame = isHost && room.joinedPlayers.length === 2 && allPlayersReady;
+  const allPlayersReady = roomData.joinedPlayers.every((p: any) => p.isReady);
+  const canStartGame =
+    isHost && roomData.joinedPlayers.length === 2 && allPlayersReady;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
@@ -165,7 +180,7 @@ export function WaitingRoom({ room, onGameStart }: WaitingRoomProps) {
             <div className="flex items-center space-x-2">
               <div className="flex-1 bg-gray-100 rounded-lg px-4 py-3 text-center">
                 <span className="text-2xl font-mono font-bold text-gray-800 tracking-wider">
-                  {room.gameCode}
+                  {roomData.gameCode}
                 </span>
               </div>
               <Button
@@ -192,24 +207,26 @@ export function WaitingRoom({ room, onGameStart }: WaitingRoomProps) {
           {/* Players List */}
           <div className="space-y-3">
             <Label className="text-sm font-medium text-gray-700">
-              Players ({room.joinedPlayers.length}/2)
+              Players ({roomData.joinedPlayers.length}/2)
             </Label>
             <div className="space-y-2">
-              {room.joinedPlayers.map((player: any, index: number) => (
+              {roomData.joinedPlayers.map((player: any, index: number) => (
                 <div
                   key={player.id}
                   className={`flex items-center justify-between p-3 rounded-lg border-2 ${
-                    player.isHost 
-                      ? 'border-rose-300 bg-rose-50' 
-                      : 'border-gray-200 bg-gray-50'
+                    player.isHost
+                      ? "border-rose-300 bg-rose-50"
+                      : "border-gray-200 bg-gray-50"
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold ${
-                      player.isHost 
-                        ? 'bg-gradient-to-r from-rose-500 to-pink-600' 
-                        : 'bg-gradient-to-r from-purple-500 to-indigo-600'
-                    }`}>
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold ${
+                        player.isHost
+                          ? "bg-gradient-to-r from-rose-500 to-pink-600"
+                          : "bg-gradient-to-r from-purple-500 to-indigo-600"
+                      }`}
+                    >
                       {index + 1}
                     </div>
                     <div>
@@ -222,7 +239,7 @@ export function WaitingRoom({ room, onGameStart }: WaitingRoomProps) {
                         )}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {player.isReady ? 'Ready' : 'Not ready'}
+                        {player.isReady ? "Ready" : "Not ready"}
                       </div>
                     </div>
                   </div>
@@ -237,14 +254,14 @@ export function WaitingRoom({ room, onGameStart }: WaitingRoomProps) {
           </div>
 
           {/* Ready Button */}
-          {!isHost && (
-            <Button
-              onClick={handleReadyToggle}
-              className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg"
-            >
-              {room.joinedPlayers.find((p: any) => p.id === useMultiplayerStore.getState().playerId)?.isReady ? 'Not Ready' : 'Ready'}
-            </Button>
-          )}
+          <Button
+            onClick={handleReadyToggle}
+            className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg"
+          >
+            {roomData.joinedPlayers.find((p: any) => p.id === playerId)?.isReady
+              ? "Not Ready"
+              : "Ready"}
+          </Button>
 
           {/* Start Game Button */}
           {canStartGame && (
@@ -258,8 +275,11 @@ export function WaitingRoom({ room, onGameStart }: WaitingRoomProps) {
 
           {!canStartGame && isHost && (
             <div className="text-center text-sm text-gray-500">
-              {room.joinedPlayers.length < 2 && 'Waiting for another player to join...'}
-              {room.joinedPlayers.length === 2 && !allPlayersReady && 'Waiting for all players to be ready...'}
+              {roomData.joinedPlayers.length < 2 &&
+                "Waiting for another player to join..."}
+              {roomData.joinedPlayers.length === 2 &&
+                !allPlayersReady &&
+                "Waiting for all players to be ready..."}
             </div>
           )}
         </CardContent>

@@ -102,6 +102,8 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       playerName: hostName,
     });
 
+    console.log("Room created successfully:", newRoom);
+
     // Subscribe to room updates
     get().subscribeToRoom(newRoom.id);
 
@@ -169,6 +171,8 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       playerName,
     });
 
+    console.log("Room joined successfully:", room);
+
     // Subscribe to room updates
     get().subscribeToRoom(room.id);
 
@@ -221,11 +225,22 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
 
   updatePlayerReady: async (playerId: string, isReady: boolean) => {
     const { currentRoom } = get();
-    if (!currentRoom) return;
+    if (!currentRoom) {
+      console.error("No current room found when updating player ready status");
+      return;
+    }
+
+    console.log("Updating player ready status:", {
+      playerId,
+      isReady,
+      currentRoom,
+    });
 
     const updatedPlayers = currentRoom.joinedPlayers.map(p =>
       p.id === playerId ? { ...p, isReady } : p
     );
+
+    console.log("Updated players:", updatedPlayers);
 
     const { error } = await supabase
       .from("multiplayer_rooms")
@@ -233,8 +248,11 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
       .eq("id", currentRoom.id);
 
     if (error) {
+      console.error("Failed to update player ready status:", error);
       throw new Error(`Failed to update player ready status: ${error.message}`);
     }
+
+    console.log("Successfully updated player ready status");
   },
 
   spinWheel: async (levelId: number, questionId?: string) => {
@@ -322,6 +340,11 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
   },
 
   subscribeToRoom: (roomId: string) => {
+    console.log("Subscribing to room:", roomId);
+
+    // Clean up existing subscription first
+    get().unsubscribeFromRoom();
+
     const subscription = supabase
       .channel(`room-${roomId}`)
       .on(
@@ -333,6 +356,7 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
           filter: `id=eq.${roomId}`,
         },
         payload => {
+          console.log("Room update received:", payload);
           const roomData = payload.new;
           const room: MultiplayerGameRoom = {
             id: roomData.id,
@@ -348,10 +372,13 @@ export const useMultiplayerStore = create<MultiplayerStore>((set, get) => ({
             startedAt: roomData.started_at,
             completedAt: roomData.completed_at,
           };
+          console.log("Updating room state:", room);
           set({ currentRoom: room });
         }
       )
-      .subscribe();
+      .subscribe(status => {
+        console.log("Subscription status:", status);
+      });
 
     // Store subscription for cleanup
     (get() as any).subscription = subscription;
